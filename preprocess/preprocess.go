@@ -11,8 +11,9 @@ import (
 type Loads map[int]*LoadSingle
 
 type LoadSingle struct {
-	Pickup  *Coordinates
-	Dropoff *Coordinates
+	Pickup    *Coordinates
+	Dropoff   *Coordinates
+	Delivered bool
 }
 
 type Coordinates struct {
@@ -63,8 +64,9 @@ func GetData() Loads {
 
 		// initialize a single load and store it to loads
 		load := &LoadSingle{
-			Pickup:  pickUp,
-			Dropoff: dropOff,
+			Pickup:    pickUp,
+			Dropoff:   dropOff,
+			Delivered: false,
 		}
 		loadsData[id] = load
 	}
