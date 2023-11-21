@@ -97,7 +97,6 @@ func greedy(data preprocess.Loads, loadIDs []LoadIdDist, hp float64, displayOP b
 	}
 
 	cost := float64(500 * len(drivers))
-	cost = 0.0
 	for _, driverData := range drivers {
 		driverData.Time += euclidianDistance(driverData.CurrCoord, *DEPOT_COORD)
 		cost += driverData.Time
