@@ -28,40 +28,56 @@ type LoadIdDist struct {
 }
 
 func Greedy(data preprocess.Loads) {
-	// iterate through the map is ascending order of their distance from depot for consistancy by iterating over sorted keys
-	loadIDs := make([]LoadIdDist, 0)
-	for loadID, loadData := range data {
-		getTime(*DEPOT_COORD, *loadData)
-		loadIDs = append(loadIDs, LoadIdDist{
-			Id:   loadID,
-			Dist: getTime(*DEPOT_COORD, *loadData),
-		})
-	}
-	sort.Slice(loadIDs, func(i, j int) bool {
-		return loadIDs[i].Dist < loadIDs[j].Dist
-	})
-
 	// get the best hyperparameter
 	cost := math.MaxFloat64
 	hp := -1.0
-	for i := 0.4; i <= 1.6; i += 0.01 {
-		c := greedy(data, loadIDs, i, false)
+	bestLoadID := make([]int, 0)
+	for i := 0.7; i <= 1.3; i += 0.1 {
+		c, LoadID := Genetic(data, 10, 3, i)
 		if c < cost {
 			cost = c
 			hp = i
+			bestLoadID = LoadID
 		}
 	}
-	greedy(data, loadIDs, hp, true)
+
+	// edge case:
+	// get loadIDs based on how close they are to the depot
+	shortestLoads := make([]*LoadIdDist, 0)
+	for k, v := range data {
+		dist := getTime(*DEPOT_COORD, *v)
+		shortestLoads = append(shortestLoads, &LoadIdDist{
+			Id:   k,
+			Dist: dist,
+		})
+	}
+	sort.Slice(shortestLoads, func(i, j int) bool {
+		return shortestLoads[i].Dist < shortestLoads[j].Dist
+	})
+	// get only loadIDs from this
+	shortestLoadIDs := make([]int, 0)
+	for _, v := range shortestLoads {
+		shortestLoadIDs = append(shortestLoadIDs, v.Id)
+	}
+	for i := 0.7; i <= 1.3; i += 0.1 {
+		c := greedy(data, shortestLoadIDs, i, false)
+		if c < cost {
+			cost = c
+			hp = i
+			bestLoadID = shortestLoadIDs
+		}
+	}
+
+	greedy(data, bestLoadID, hp, true)
 }
 
-func greedy(data preprocess.Loads, loadIDs []LoadIdDist, hp float64, displayOP bool) float64 {
+func greedy(data preprocess.Loads, loadIDs []int, hp float64, displayOP bool) float64 {
 	// create drivers
 	currDriverID := 0
 	drivers := make(map[int]*Driver)
 
 	// Check for available load
-	for _, loadData := range loadIDs {
-		loadID := loadData.Id
+	for _, loadID := range loadIDs {
 		load := data[loadID]
 		driverID := -1
 
@@ -96,7 +112,8 @@ func greedy(data preprocess.Loads, loadIDs []LoadIdDist, hp float64, displayOP b
 		drivers[driverID].Deliveries = append(drivers[driverID].Deliveries, loadID)
 	}
 
-	cost := float64(500 * len(drivers))
+	// cost := float64(500 * len(drivers))
+	cost := 0.0
 	for _, driverData := range drivers {
 		driverData.Time += euclidianDistance(driverData.CurrCoord, *DEPOT_COORD)
 		cost += driverData.Time

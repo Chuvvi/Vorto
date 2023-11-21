@@ -10,4 +10,5 @@ func main() {
 	loadsData := preprocess.GetData()
 
 	algo.Greedy(loadsData)
+	// algo.Genetic(loadsData, 100, 10)
 }
