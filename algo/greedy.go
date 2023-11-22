@@ -30,20 +30,9 @@ type LoadIdDist struct {
 func Greedy(data preprocess.Loads) {
 	// get the best hyperparameter
 	cost := math.MaxFloat64
-	hp := -1.0
-	bestLoadID := make([]int, 0)
-	for i := 0.7; i <= 1.3; i += 0.1 {
-		c, LoadID := Genetic(data, 10, 3, i)
-		if c < cost {
-			cost = c
-			hp = i
-			bestLoadID = LoadID
-		}
-	}
-
-	// edge case:
 	// get loadIDs based on how close they are to the depot
 	shortestLoads := make([]*LoadIdDist, 0)
+	bestDrivers := make(map[int]*Driver)
 	for k, v := range data {
 		dist := getTime(*DEPOT_COORD, *v)
 		shortestLoads = append(shortestLoads, &LoadIdDist{
@@ -60,18 +49,18 @@ func Greedy(data preprocess.Loads) {
 		shortestLoadIDs = append(shortestLoadIDs, v.Id)
 	}
 	for i := 0.7; i <= 1.3; i += 0.1 {
-		c := greedy(data, shortestLoadIDs, i, false)
+		c, drivers := greedy(data, shortestLoadIDs, i, false)
 		if c < cost {
 			cost = c
-			hp = i
-			bestLoadID = shortestLoadIDs
+			bestDrivers = drivers
 		}
 	}
 
-	greedy(data, bestLoadID, hp, true)
+	a := Genetic(data, bestDrivers, 100, 20)
+	printOP(a)
 }
 
-func greedy(data preprocess.Loads, loadIDs []int, hp float64, displayOP bool) float64 {
+func greedy(data preprocess.Loads, loadIDs []int, hp float64, displayOP bool) (float64, map[int]*Driver) {
 	// create drivers
 	currDriverID := 0
 	drivers := make(map[int]*Driver)
@@ -123,7 +112,7 @@ func greedy(data preprocess.Loads, loadIDs []int, hp float64, displayOP bool) fl
 		printOP(drivers)
 	}
 
-	return cost
+	return cost, drivers
 }
 
 // driver function to add a new driver starting at (0, 0)
