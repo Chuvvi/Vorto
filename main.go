@@ -1,8 +1,8 @@
 package main
 
 import (
-	"vorto/algo"
-	"vorto/preprocess"
+	"github.com/Chuvvi/Vorto/algo"
+	"github.com/Chuvvi/Vorto/preprocess"
 )
 
 func main() {
@@ -10,5 +10,4 @@ func main() {
 	loadsData := preprocess.GetData()
 
 	algo.Greedy(loadsData)
-	// algo.Genetic(loadsData, 100, 10)
 }

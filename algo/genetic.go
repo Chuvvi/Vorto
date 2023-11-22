@@ -3,7 +3,8 @@ package algo
 import (
 	"math/rand"
 	"sort"
-	"vorto/preprocess"
+
+	"github.com/Chuvvi/Vorto/preprocess"
 )
 
 type Indices struct {

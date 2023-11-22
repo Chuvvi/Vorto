@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"math"
 	"sort"
-	"vorto/preprocess"
+
+	"github.com/Chuvvi/Vorto/preprocess"
 )
 
 type Driver struct {
