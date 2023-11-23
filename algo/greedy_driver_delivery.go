@@ -29,6 +29,9 @@ type LoadIdDist struct {
 
 // assign driver to delivery
 func GreedyDriverToDelivery(data preprocess.Loads) (map[int]*Driver, float64) {
+	// make a adjacency list for easier calculation
+	distArr = make(([][]float64), len(data)+1)
+	initializeDist(data)
 	// get the best hyperparameter
 	cost := math.MaxFloat64
 	// get loadIDs based on how close they are to the depot
@@ -57,9 +60,9 @@ func GreedyDriverToDelivery(data preprocess.Loads) (map[int]*Driver, float64) {
 		}
 	}
 
-	a := Genetic(data, bestDrivers, 100, 20)
-	c := calculateCost(a)
-	return a, c
+	bestDrivers = Genetic(data, bestDrivers, 100, 20)
+	c := calculateCost(data, bestDrivers)
+	return bestDrivers, c
 }
 
 func greedy(data preprocess.Loads, loadIDs []int, hp float64) (float64, map[int]*Driver) {

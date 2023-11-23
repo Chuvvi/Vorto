@@ -131,6 +131,7 @@ func Genetic(data preprocess.Loads, drivers map[int]*Driver, k int, generations 
 
 			driver.Deliveries = minDelivery
 		}
+		driver.Time = minDist
 		optimalDrivers[driverID] = driver
 	}
 	return optimalDrivers

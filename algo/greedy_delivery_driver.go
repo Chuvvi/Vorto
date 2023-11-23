@@ -8,10 +8,13 @@ import (
 
 // assign delivery to driver
 func GreedyDeliveryToDriver(data preprocess.Loads) (map[int]*Driver, float64) {
-	a := assignDeliveries(data)
-	b := Genetic(data, a, 100, 20)
-	c := calculateCost(b)
-	return a, c
+	// make a adjacency list for easier calculation
+	distArr = make(([][]float64), len(data)+1)
+	initializeDist(data)
+	bestDrivers := assignDeliveries(data)
+	bestDrivers = Genetic(data, bestDrivers, 100, 20)
+	c := calculateCost(data, bestDrivers)
+	return bestDrivers, c
 }
 
 func assignDeliveries(data preprocess.Loads) map[int]*Driver {
